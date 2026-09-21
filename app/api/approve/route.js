@@ -4,12 +4,13 @@ import { createClient } from '@supabase/supabase-js';
 export async function POST(req) {
   try {
     const { email } = await req.json();
-    if (!email) {
-      return NextResponse.json({ error: 'Email chahiye' }, { status: 400 });
-    }
-
+    
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      return NextResponse.json({ error: 'Supabase keys missing in Vercel' }, { status: 500 });
+    }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -19,7 +20,7 @@ export async function POST(req) {
 
     if (error) throw error;
 
-    return NextResponse.json({ success: true, message: 'Approved!' });
+    return NextResponse.json({ success: true });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
