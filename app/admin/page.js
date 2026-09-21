@@ -6,31 +6,42 @@ export default function Admin() {
   const [msg, setMsg] = useState('')
 
   async function approve() {
-    if(!email) return
+    if (!email) {
+      setMsg('Email likh pehle')
+      return
+    }
     setMsg('Approving...')
-    const res = await fetch('/api/approve', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ email })
-    })
-    const data = await res.json()
-    if(data.success) setMsg(`✅ ${email} is now PREMIUM`)
-    else setMsg(`❌ Error: ${data.error}`)
+    try {
+      const res = await fetch('/api/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setMsg(`${email} is now PREMIUM ✓`)
+        setEmail('')
+      } else {
+        setMsg(`Error: ${data.error}`)
+      }
+    } catch (e) {
+      setMsg(`Error: ${e.message}`)
+    }
   }
 
   return (
-    <div style={{padding:30, fontFamily:'sans-serif'}}>
+    <div style={{ padding: 30 }}>
       <h2>RedEye Admin - Approve Premium</h2>
-      <input 
-        value={email} 
-        onChange={e=>setEmail(e.target.value)} 
-        placeholder="user ka email likho" 
-        style={{padding:10, width:280, border:'1px solid black'}} 
+      <input
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="user ka email likho"
+        style={{ padding: 10, width: 300, border: '1px solid #000' }}
       />
-      <button onClick={approve} style={{padding:'10px 20px', marginLeft:10, background:'black', color:'white', cursor:'pointer'}}>
+      <button onClick={approve} style={{ padding: '10px 20px', marginLeft: 8, cursor: 'pointer' }}>
         APPROVE
       </button>
-      <p style={{marginTop:20}}>{msg}</p>
+      <p style={{ marginTop: 20, fontWeight: 'bold' }}>{msg}</p>
     </div>
   )
 }
